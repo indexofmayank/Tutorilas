@@ -42,10 +42,21 @@ export const fetchPosts = createAsyncThunk('posts/fechPosts', async () => {
     return response.data;
 });
 
-export const addNewPost = createAsyncThunk(`posts/addNewPost`, async (initailPost) => {
-    const response = await axios.post(POSTS_URL, initailPost);
+export const addNewPost = createAsyncThunk(`posts/addNewPost`, async (initialPost) => {
+    const response = await axios.post(POSTS_URL, initialPost);
     return response.data;
 });
+
+export const udpatePost = createAsyncThunk(`posts/updatePost`, async (initialPost) => {
+    const {id} = initialPost;
+    try {
+        const response = await axios.put(`${POSTS_URL}`, initialPost)
+        return response.data
+    } catch (error) {
+        console.log(error);
+        return initialPost;
+    }
+})
 
 export const selectPostById = (state, postId) => {
     state.posts.posts.find(post => post.id === postId);
