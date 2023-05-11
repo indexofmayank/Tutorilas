@@ -37,6 +37,17 @@ const initialState = {
     // }
 }
 
+export const deletePost = createAsyncThunk('posts/deltePost', async(initialPost) => {
+    const {id} = initialPost;
+    try {
+        const response = await axios.delete(`${POSTS_URL}/${id}`)
+        if(response?.status === 200) return initialPost;
+        return `${response.status}: ${response.statusText}`;
+    } catch (error) {
+        return error.message;
+    }
+})
+
 export const fetchPosts = createAsyncThunk('posts/fechPosts', async () => {
     const response = await axios.get(POSTS_URL);
     return response.data;
@@ -58,9 +69,6 @@ export const udpatePost = createAsyncThunk(`posts/updatePost`, async (initialPos
     }
 })
 
-export const selectPostById = (state, postId) => {
-    state.posts.posts.find(post => post.id === postId);
-}
 
 const postsSlice = createSlice({
     name: 'posts',
@@ -143,12 +151,34 @@ const postsSlice = createSlice({
             console.log(action.payload)
             state.posts.push(action.payload)
         })
+        .addCase(udpatePost.fulfilled, (state, action) => {
+            if (!action.payload?.id) {
+                console.log('Update could not complete');
+                console.log(action.payload)
+                return;
+            }
+            const {id} = action.payload;
+            const posts = state.posts.filter(post => post.id !== id);
+            state.posts = [...posts, action.payload];
+        })
+        .addCase(deletePost.fulfilled, (state, action) => {
+            if(!action.payload?.id) {
+                console.log('Delete could not complete');
+                console.log(action.payload);
+            }
+            const {id} = action.payload
+            const posts = state.posts.filter(post => post.id !== id);
+            state.posts = posts;
+        })
     }
 });
 
 export const getPostsStatus = (state) => state.posts.status;
 export const getPostsError = (state) => state.posts.error;
 export const selectAllPosts = (state) => state.posts.posts;
+
+export const selectPostById = (state, postId) => state.posts.posts.find(post => post.id === postId)
+
 export const { postAdded, reactionAdded } = postsSlice.actions;
 
 export default postsSlice.reducer;
