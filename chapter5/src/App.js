@@ -3,7 +3,7 @@ import PostsList from "./features/posts/PostsList";
 import AddPostForm from "./features/posts/AddPostForm";
 import SinglePostPage from "./features/posts/SinglePostPage";
 import EditPostForm from "./features/posts/EditPostForm";
-import userPage from "./features/users/userPage";
+import UserPage from "./features/users/UserPage";
 import Layout from "./components/Layout";
 import { Routes, Route } from "react-router-dom";
 import UserList from './features/users/UserList';
@@ -23,7 +23,7 @@ function App() {
 
         <Route path="user">
           <Route index element={<UserList />} />
-            <Route path=":userId" element={<userPage />} />
+            <Route path=":userId" element={<UserPage />} />
         </Route>
 
 

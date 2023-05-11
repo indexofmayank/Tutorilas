@@ -177,7 +177,7 @@ export const getPostsStatus = (state) => state.posts.status;
 export const getPostsError = (state) => state.posts.error;
 export const selectAllPosts = (state) => state.posts.posts;
 
-export const selectPostByUser = (state, userId) => state.posts.posts.find(post => userId.id === userId);
+export const selectPostByUser = (state, userId) => state.posts.posts.filter(post => post.userId === userId);
 export const selectPostById = (state, postId) => state.posts.posts.find(post => post.id === postId);
 export const { postAdded, reactionAdded } = postsSlice.actions;
 
