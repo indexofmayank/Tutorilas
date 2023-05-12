@@ -1,25 +1,34 @@
-import { useGetTodosQuery } from '../../api/apiSlice'
-// add imports
+import {
+    useGetTodosQuery,
+    useAddTodosMutation,
+    useDeleteTodoMutation,
+    useUpdateTodoMutation
+} from "../api/apiSlice";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrash, faUpload } from '@fortawesome/free-solid-svg-icons'
 import { useState } from "react"
 
+
 const TodoList = () => {
     const [newTodo, setNewTodo] = useState('')
-
     const {
         data: todos,
         isLoading,
         isSuccess,
         isError,
         error
-    } = useGetTodosQuery();
+    } = useGetTodosQuery() //These are the customs hook created for us by RTK query
+    const [addTodos] = useAddTodosMutation();
+    const [updateTodo] = useUpdateTodoMutation();
+    const [deleteTodo] = useDeleteTodoMutation();
+   
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        //addTodo
+        addTodos({userId: 1, title: newTodo, completed: false})
         setNewTodo('')
     }
+
 
     const newItemSection =
         <form onSubmit={handleSubmit}>
@@ -38,15 +47,31 @@ const TodoList = () => {
             </button>
         </form>
 
-
-    let content;
-    //This section is not okay giving error
+// Define conditional content
+let content;
     if (isLoading) {
         content = <p>Loading...</p>
     } else if (isSuccess) {
-        content = JSON.stringify(todos)
+        content = todos.map(todo => { //JSON.stringify(todos)
+            return (
+                <article key={todo.id}>
+                    <div className="todo">
+                        <input
+                            type="checkbox"
+                            checked={todo.completed}
+                            id={todo.id}
+                            onChange={() => updateTodo({ ...todo, completed: !todo.completed })}
+                        />
+                        <label htmlFor={todo.id}>{todo.title}</label>
+                    </div>
+                    <button className="trash" onClick={() => deleteTodo({ id: todo.id })}>
+                        <FontAwesomeIcon icon={faTrash} />
+                    </button>
+                </article>
+            )
+        })
     } else if (isError) {
-        content = <p>An unknown error happend</p>
+        content = <p>{error}</p>
     }
 
     return (
